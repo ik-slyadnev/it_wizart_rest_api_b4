@@ -1,4 +1,5 @@
 import json
+import allure
 
 
 class AccountHelper:
@@ -6,6 +7,7 @@ class AccountHelper:
         self.dm_api_facade = dm_api_facade
         self.mailhog_facade = mailhog_facade
 
+    @allure.step("Авторизация пользователя")
     def auth_client(self, login: str, password: str):
         """
         Авторизация пользователя
@@ -29,6 +31,7 @@ class AccountHelper:
 
         return response
 
+    @allure.step("Регистрация нового пользователя")
     def register_new_user(self, user):
         """
         Регистрация нового пользователя с активацией аккаунта через email
@@ -46,6 +49,7 @@ class AccountHelper:
 
         return user
 
+    @allure.step("Регистрация аккаунта")
     def register_account(self, login: str, email: str, password: str):
         """
         Регистрация аккаунта пользователя
@@ -61,6 +65,7 @@ class AccountHelper:
         )
         assert response.status_code == 201, f"Не удалось зарегистрировать пользователя {login}"
 
+    @allure.step("Получение токена активации для пользователя")
     def get_registration_token(self, login: str):
         """
         Получение токена активации из почты
@@ -83,6 +88,7 @@ class AccountHelper:
         assert token is not None, f"Токен для пользователя {login} не был получен"
         return token
 
+    @allure.step("Активация аккаунта")
     def activate_account(self, token: str):
         """
         Активация аккаунта по токену
@@ -95,6 +101,7 @@ class AccountHelper:
         response = self.dm_api_facade.account_api.put_v1_account_token(token)
         assert response.status_code == 200, f"Не удалось активировать аккаунт"
 
+    @allure.step("Получение информации о текущем пользователе")
     def get_current_user(self):
         """
         Получение информации о текущем пользователе
@@ -105,6 +112,7 @@ class AccountHelper:
         response = self.dm_api_facade.account_api.get_v1_account()
         return response
 
+    @allure.step("Сброс пароля для пользователя")
     def reset_password(self, login: str, email: str):
         """
         Запрос на сброс пароля и получение reset token
@@ -134,6 +142,7 @@ class AccountHelper:
         assert reset_token is not None, f"Токен сброса пароля для пользователя {login} не был получен"
         return reset_token
 
+    @allure.step("Смена пароля пользователя")
     def change_password(self, password: str, new_password: str):
         """
         Смена пароля пользователя

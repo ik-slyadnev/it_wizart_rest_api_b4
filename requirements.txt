@@ -17,3 +17,5 @@ structlog==25.1.0
 typing_extensions==4.12.2
 urllib3==2.3.0
 PyYAML~=6.0.2
+allure-python-commons~=2.13.5
+curlify~=2.2.1
