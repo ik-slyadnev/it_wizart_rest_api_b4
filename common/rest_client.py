@@ -3,6 +3,7 @@ import uuid
 from json import JSONDecodeError
 from requests import session
 from configs.configuration import Configuration
+from common.utils import allure_attach
 
 
 class RestClient:
@@ -33,6 +34,7 @@ class RestClient:
     def delete(self, path, **kwargs):
         return self._send_request(method="DELETE", path=path, **kwargs)
 
+    @allure_attach
     def _send_request(self, method, path, **kwargs):
         log = self.log.bind(event_id=str(uuid.uuid4()))
         full_url = self.host + path
@@ -42,8 +44,8 @@ class RestClient:
             rest_response.raise_for_status()
             return rest_response
 
-        log.msg (
-            event = "Request",
+        log.msg(
+            event="Request",
             method=method,
             full_url=full_url,
             params=kwargs.get("params"),
@@ -53,11 +55,11 @@ class RestClient:
         )
 
         rest_response = self.session.request(method=method, url=full_url, **kwargs)
-        log.msg (
+        log.msg(
             event="Response",
-            status_code = rest_response.status_code,
-            headers = rest_response.headers,
-            json = self._get_json(rest_response)
+            status_code=rest_response.status_code,
+            headers=rest_response.headers,
+            json=self._get_json(rest_response)
         )
         rest_response.raise_for_status()
         return rest_response

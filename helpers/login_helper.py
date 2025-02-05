@@ -1,9 +1,11 @@
 from requests import Response
+import allure
 
 class LoginHelper:
     def __init__(self, dm_api_facade):
         self.dm_api_facade = dm_api_facade
 
+    @allure.step("Авторизация пользователя")
     def login(self, login: str, password: str) -> Response:
         """
         Авторизация пользователя
@@ -18,6 +20,7 @@ class LoginHelper:
         )
         return response
 
+    @allure.step("Очистка токенов авторизации")
     def _clear_auth_tokens(self):
         """
         Очистка токенов авторизации
@@ -25,6 +28,7 @@ class LoginHelper:
         for api in [self.dm_api_facade.account_api, self.dm_api_facade.login_api]:
             api.session.headers.pop("X-Dm-Auth-Token", None)
 
+    @allure.step("Выход из системы")
     def logout(self) -> Response:
         """
         Выход из системы (удаление текущей сессии)
@@ -36,6 +40,7 @@ class LoginHelper:
             self._clear_auth_tokens()
         return response
 
+    @allure.step("Выход из системы на всех устройствах")
     def logout_all(self) -> Response:
         """
         Выход из системы на всех устройствах

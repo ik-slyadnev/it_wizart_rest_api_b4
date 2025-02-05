@@ -117,7 +117,9 @@ def auth_user(account_helper, prepare_user):
     Returns:
         namedtuple: AuthUserData с полями user и helper
     """
-    user = account_helper.register_new_user(user=prepare_user)
+    # Передаем prepare_user как позиционный аргумент
+    user = account_helper.register_new_user(prepare_user)
+
     auth_response = account_helper.auth_client(
         login=user.login,
         password=user.password
