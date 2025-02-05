@@ -1,0 +1,8 @@
+service:
+  dm_api:
+    host: 'http://5.63.153.31:5051'
+    disable_log: false
+
+  mailhog:
+    host: 'http://5.63.153.31:5025'
+    disable_log: true
