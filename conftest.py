@@ -1,6 +1,7 @@
 import pytest
 import yaml
 import os
+from vyper import v
 from faker import Faker
 from collections import namedtuple
 from common.logger import setup_logging
@@ -53,40 +54,39 @@ def pytest_addoption(parser):
 @pytest.fixture(scope='session')
 def config(request):
     """
-    Получает конфигурацию для указанного окружения
+    Инициализация конфигурации с помощью vyper
     """
     env = request.config.getoption('--env')
-    config_path = os.path.join(os.path.dirname(__file__),
-                               f'configs/{env}.yaml')
-    return load_config(config_path)
+
+    # Настройка vyper
+    v.set_config_name(env)  # имя файла без расширения
+    v.add_config_path(os.path.join(os.path.dirname(__file__), 'configs'))  # путь к папке с конфигами
+    v.set_config_type('yaml')  # тип конфига
+
+    try:
+        v.read_in_config()
+    except Exception as e:
+        raise Exception(f"Error reading config file: {e}")
+
+    return v
 
 
 @pytest.fixture
 def main_config(config):
-    """
-    Конфигурация для DM API
-    Returns:
-        Configuration: объект с настройками для работы с DM API
-    """
+    """Конфигурация для DM API"""
     return Configuration(
-        host=config['service']['dm_api']['host'],
+        host=config.get_string('service.dm_api.host'),
         headers={'Content-Type': 'application/json'},
-        disable_log=config['service']['dm_api']['disable_log']
+        disable_log=config.get_bool('service.dm_api.disable_log')
     )
-
 
 @pytest.fixture
 def mailhog_config(config):
-    """
-    Конфигурация для Mailhog
-    Returns:
-        Configuration: объект с настройками для работы с Mailhog
-    """
+    """Конфигурация для Mailhog"""
     return Configuration(
-        host=config['service']['mailhog']['host'],
-        disable_log=config['service']['mailhog']['disable_log']
+        host=config.get_string('service.mailhog.host'),
+        disable_log=config.get_bool('service.mailhog.disable_log')
     )
-
 
 ################################################################################
 # Фикстуры для работы с пользователями
